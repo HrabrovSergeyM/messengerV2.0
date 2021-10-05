@@ -1,5 +1,6 @@
 import React, { useLayoutEffect, useState } from "react";
 import {
+  FlatList,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -79,6 +80,7 @@ const ChatScreen = ({ navigation, route }) => {
           }))
         )
       );
+
     return unsubscribe;
   }, [route]);
 
@@ -97,36 +99,41 @@ const ChatScreen = ({ navigation, route }) => {
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <>
-            <ScrollView contentContainerStyle={{ paddingTop: 15 }}>
-              {messages.map(({ id, data }) =>
-                data.email === auth.currentUser.email ? (
-                  <View key={id} style={styles.reciever}>
+            <FlatList
+              contentContainerStyle={{ paddingTop: 15 }}
+              inverted
+              data={messages}
+              renderItem={({ item }) =>
+                item.data.email === auth.currentUser.email ? (
+                  <View key={item.data.id} style={styles.receiver}>
                     <Avatar
                       position="absolute"
                       bottom={-15}
                       right={-5}
                       size={30}
                       rounded
-                      source={{ uri: data.photoURL }}
+                      source={{ uri: item.data.photoURL }}
                     />
-                    <Text style={styles.recieverText}>{data.message}</Text>
+                    <Text style={styles.receiverText}>{item.data.message}</Text>
                   </View>
                 ) : (
-                  <View key={id} style={styles.sender}>
+                  <View key={item.data.id} style={styles.sender}>
                     <Avatar
                       position="absolute"
                       bottom={-15}
                       right={-5}
                       size={30}
                       rounded
-                      source={{ uri: data.photoURL }}
+                      source={{ uri: item.data.photoURL }}
                     />
-                    <Text style={styles.senderText}>{data.message}</Text>
-                    <Text style={styles.senderName}>{data.displayName}</Text>
+                    <Text style={styles.senderText}>{item.data.message}</Text>
+                    <Text style={styles.senderName}>
+                      {item.data.displayName}
+                    </Text>
                   </View>
                 )
-              )}
-            </ScrollView>
+              }
+            />
             <View style={styles.footer}>
               <TextInput
                 value={input}
@@ -152,7 +159,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  reciever: {
+  receiver: {
     padding: 15,
     backgroundColor: "#ECECEC",
     alignSelf: "flex-end",
@@ -162,7 +169,7 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
     position: "relative",
   },
-  recieverText: {
+  receiverText: {
     color: "black",
     fontWeight: "500",
     marginLeft: 10,
@@ -179,7 +186,6 @@ const styles = StyleSheet.create({
   senderText: {
     color: "white",
     fontWeight: "500",
-    fontSize: 10,
     color: "white",
   },
   senderName: {
